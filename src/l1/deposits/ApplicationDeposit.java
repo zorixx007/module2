@@ -5,7 +5,7 @@ import java.util.Collections;
 public class ApplicationDeposit {
 
     private static void run () {
-        Init.initDeposit ( );
+        Init.initDeposits ( );
         //        sort by inerestRate - overridden compareTo
         Collections.sort ( Init.depositList );
         System.out.println ( "sort by InterestRate" );

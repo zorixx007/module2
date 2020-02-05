@@ -59,8 +59,9 @@ public class Deposit implements Comparable<Deposit> {
         final int BEFORE = -1;
         final int EQUAL = 0;
         final int AFTER = 1;
-        if ( this.interestRate > that.interestRate ) return AFTER;
-        else if ( this.interestRate < that.interestRate ) {
+        if ( this.interestRate > that.interestRate ) {
+            return AFTER;
+        } else if ( this.interestRate < that.interestRate ) {
             return BEFORE;
         } else {
             return EQUAL;

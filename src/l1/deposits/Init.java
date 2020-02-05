@@ -9,7 +9,7 @@ import java.util.List;
 public class Init {
     public static List<Deposit> depositList = new ArrayList<> ( );
 
-    public static void initDeposit () {
+    public static void initDeposits () {
         depositList.add ( new Deposit ( "Simple" , Date.valueOf ( "2013-09-08" ) , 61 , 2500 , 18 ) );
         depositList.add ( new Deposit ( "MonthCapit" , Date.valueOf ( "2012-02-01" ) , 181 , 10000 , 21 ) );
         depositList.add ( new Deposit ( "Simple" , Date.valueOf ( "2013-11-12" ) , 30 , 5500 , 15.3 ) );
@@ -45,8 +45,8 @@ public class Init {
         } );
     }
 
-    //        sort by sum
-    public  static Comparator<Deposit> comparatorDate = new Comparator<Deposit> ( ) {
+    //        sort by date
+    static Comparator<Deposit> comparatorDate = new Comparator<Deposit> ( ) {
         @Override
         public int compare ( Deposit a , Deposit b ) {
             final int BEFORE = -1;
@@ -64,8 +64,8 @@ public class Init {
 
 
 
-//    sort by date
-    public static Comparator<Deposit> comparatorSum = (Deposit a, Deposit b) -> (int)a.getSum () - (int)b.getSum ();
+//    sort by sum
+     static Comparator<Deposit> comparatorSum = (Deposit a, Deposit b) -> (int)a.getSum () - (int)b.getSum ();
 
 }
 
