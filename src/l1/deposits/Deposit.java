@@ -3,6 +3,7 @@ package l1.deposits;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class Deposit implements Comparable<Deposit> {
     String depositType;
@@ -68,4 +69,21 @@ public class Deposit implements Comparable<Deposit> {
         }
     }
 
+
+    @Override
+    public boolean equals ( Object o ) {
+        if ( this == o ) return true;
+        if ( o == null || getClass ( ) != o.getClass ( ) ) return false;
+        Deposit deposit = (Deposit) o;
+        return dayLong == deposit.dayLong &&
+                Double.compare ( deposit.sum , sum ) == 0 &&
+                Double.compare ( deposit.interestRate , interestRate ) == 0 &&
+                depositType.equals ( deposit.depositType ) &&
+                startDate.equals ( deposit.startDate );
+    }
+
+    @Override
+    public int hashCode () {
+        return Objects.hash ( depositType , startDate , dayLong , sum , interestRate );
+    }
 }

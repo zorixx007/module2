@@ -11,6 +11,8 @@ import java.util.List;
 Create a method that will place an Animal of any species inside a particular container
 (both Animal and Container are arguments)
 */
+
+//T extends animal
 public class AddAnimalIntoContainerService {
     public static void addAnimalIntoContainer ( Animal animal , Container currentContainer ) {
         switch (animal.getType ( )) {

@@ -5,7 +5,7 @@ import l1.zoo.entity.FEEDTYPE;
 
 import java.util.List;
 
-public class Container {
+public class Container<T extends Animal> {
     final FEEDTYPE feedType;
     List<? extends Animal> animalContainer;
 

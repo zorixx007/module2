@@ -10,7 +10,9 @@ public class RemoveService {
         //                        i--;
         //                    }
         //                }
-
+//for(Deposit i: Init.depositList){
+//    Init.depositList.remove ( i );
+//}
 
 //        ListIterator<Deposit> iter = Init.depositList.listIterator ( );
 //        while (iter.hasNext ( )) {
