@@ -15,17 +15,10 @@ import java.nio.file.StandardCopyOption;
 
 public class GetFileFromWeb {
     private static void run () {
-        BufferedInputStream inStream = null;
-        try {
-            inStream = new BufferedInputStream ( new URL ( "https://www.w3schools.com/w3css/4/w3.css" ).openStream ( ) );
+        try (BufferedInputStream inStream = new BufferedInputStream ( new URL ( "https://www.w3schools.com/w3css/4/w3.css" ).openStream ( ) );){
             Files.copy ( inStream , Paths.get ( "src/io/level2/getwebfile/downloadedFromW3School.css" ) , StandardCopyOption.REPLACE_EXISTING );
-            inStream.close ( );
         } catch (IOException e) {
             e.printStackTrace ( );
-        } finally {
-//            if ( inStream != null ) {
-//                inStream.close ( );
-//            }
         }
 
     }
