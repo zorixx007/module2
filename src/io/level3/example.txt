@@ -1,0 +1,4 @@
+one plus three-two multiply one-one
+eight-one divide-by curly-brace-open three multiply four minus three curly-brace-close
+minus one-two divide minus two multiply curly-brace-open minus three curly-brace-close
+one-two-seven divide minus three
