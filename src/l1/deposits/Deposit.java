@@ -1,11 +1,12 @@
 package l1.deposits;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
-public class Deposit implements Comparable<Deposit> {
+public class Deposit implements Comparable<Deposit>, Serializable {
     String depositType;
     Date startDate;
     int dayLong;
