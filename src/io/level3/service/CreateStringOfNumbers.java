@@ -8,25 +8,15 @@ public class CreateStringOfNumbers {
         if ( input < 0 ) {
             result = "minus ";
         }
-
-        int inputInt = abs((int) input);
-        int length = String.valueOf ( inputInt ).length ( );
-        //create reverse array of int
-        int[] intArray = new int[length];
-        for (int i = 1; i < length + 1; i++) {
-            intArray[i - 1] = inputInt % 10;
-            inputInt = inputInt / 10;
-        }
-
-        //transform reverse array to string
-
-        for (int i = length - 1; i >= 0; i--) {
-            result += ConvertNumbersToString.numToStr ( intArray[i] );
-            if ( i != 0 ) {
+        int inputInt = abs ( (int) input );
+        char[] chars = ( String.valueOf ( inputInt ).toCharArray ( ) );
+        for (int i = 0; i < chars.length; i++) {
+            int num = Character.getNumericValue ( chars[i] );
+            result += ConvertNumbersToString.numToStr.get ( num );
+            if ( i < chars.length - 1 ) {
                 result += "-";
             }
         }
-
         return result;
     }
 }

@@ -20,8 +20,9 @@ public class ApplicationCalc {
              PrintWriter outStream = new PrintWriter ( new FileWriter ( "src/io/level3/output.txt" ) )) {
             String line;
             while (( line = inStream.readLine ( ) ) != null) {
-                double fullNumberResult = SimpleMath.result ( ConvertStringToMathExpression.strToMath ( line ) );
-                String lineToWrite = line + " = " + CreateStringOfNumbers.strOfNumbers ( fullNumberResult ) + " (" + fullNumberResult + ")";
+                String s = ConvertStringToMathExpression.strToMath ( line );
+                double fullNumberResult = SimpleMath.result ( s );
+                String lineToWrite = line + " = " + CreateStringOfNumbers.strOfNumbers ( fullNumberResult ) + " (" + s + " = " + fullNumberResult + ")";
                 outStream.println ( lineToWrite );
             }
         } catch (IOException e) {

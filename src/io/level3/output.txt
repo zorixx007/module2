@@ -1,0 +1,4 @@
+one plus three-two multiply one-one = three-five-three (1+32*11 = 353.0)
+eight-one divide-by curly-brace-open three multiply four minus three curly-brace-close = nine (81/(3*4-3) = 9.0)
+minus one-two divide minus two multiply curly-brace-open minus three curly-brace-close = minus one-eight (-12/-2*(-3) = -18.0)
+one-two-seven divide minus three = minus four-two (127/-3 = -42.333333333333336)
