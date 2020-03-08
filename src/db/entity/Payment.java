@@ -5,21 +5,31 @@ import java.sql.Date;
 public class Payment {
     int id;
     Date dt;
-    int merchantId;
-    int customerId;
+    Merchant merchant;
+    Customer customer;
     String goods;
     double sumPaid;
     double chargePaid;
 
-    public Payment ( int id , Date dt , int merchantId , int customerId ,
+    public Payment ( int id , Date dt , Merchant merchant , Customer customer ,
                      String goods , double sumPaid , double chargePaid ) {
         this.id = id;
         this.dt = dt;
-        this.merchantId = merchantId;
-        this.customerId = customerId;
+        this.merchant = merchant;
+        this.customer = customer;
         this.goods = goods;
         this.sumPaid = sumPaid;
         this.chargePaid = chargePaid;
+    }
+
+    public Payment ( Date dt , Merchant merchant , Customer customer ,
+                     String goods , double sumPaid ) {
+        this.dt = dt;
+        this.merchant = merchant;
+        this.customer = customer;
+        this.goods = goods;
+        this.sumPaid = sumPaid;
+        this.chargePaid = Math.round ( ( merchant.getCharge ( ) * sumPaid ) / 100 );
     }
 
     public Payment () {
@@ -41,20 +51,20 @@ public class Payment {
         this.dt = dt;
     }
 
-    public int getMerchantId () {
-        return merchantId;
+    public Merchant getMerchant () {
+        return merchant;
     }
 
-    public void setMerchantId ( int merchantId ) {
-        this.merchantId = merchantId;
+    public void setMerchant ( Merchant merchant ) {
+        this.merchant = merchant;
     }
 
-    public int getCustomerId () {
-        return customerId;
+    public Customer getCustomer () {
+        return customer;
     }
 
-    public void setCustomerId ( int customerId ) {
-        this.customerId = customerId;
+    public void setCustomer ( Customer customer ) {
+        this.customer = customer;
     }
 
     public String getGoods () {
@@ -79,5 +89,18 @@ public class Payment {
 
     public void setChargePaid ( double chargePaid ) {
         this.chargePaid = chargePaid;
+    }
+
+    @Override
+    public String toString () {
+        return "Payment{" +
+                "id=" + id +
+                ", dt=" + dt +
+                ", merchantId=" + merchant.getMerchantId ( ) +
+                ", customerId=" + customer.getCustomerId ( ) +
+                ", goods='" + goods + '\'' +
+                ", sumPaid=" + sumPaid +
+                ", chargePaid=" + chargePaid +
+                '}';
     }
 }

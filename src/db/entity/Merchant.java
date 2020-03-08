@@ -1,6 +1,7 @@
 package db.entity;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 public class Merchant {
     int merchantId;
@@ -13,10 +14,10 @@ public class Merchant {
     double minSum;
     double needToSend;
     double sent;
-    Date lastSent;
+    LocalDate lastSent;
 
     public Merchant ( int merchantId , String name , String bankName , String swift , String account , double charge ,
-                      int period , double minSum , double needToSend , double sent , Date lastSent ) {
+                      int period , double minSum , double needToSend , double sent , LocalDate lastSent ) {
         this.merchantId = merchantId;
         this.name = name;
         this.bankName = bankName;
@@ -113,11 +114,11 @@ public class Merchant {
         this.sent = sent;
     }
 
-    public Date getLastSent () {
+    public LocalDate getLastSent () {
         return lastSent;
     }
 
-    public void setLastSent ( Date lastSent ) {
+    public void setLastSent ( LocalDate lastSent ) {
         this.lastSent = lastSent;
     }
 

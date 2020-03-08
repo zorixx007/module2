@@ -1,33 +1,31 @@
 package db.service;
 
+import db.entity.Merchant;
 import db.entity.MerchantReport;
-import db.repository.MyConnection;
+import db.entity.Payment;
+import db.repository.GetMerchant;
+import db.repository.GetPaymentByMerchant;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 
 public class MerchantReportService {
 
+    public static MerchantReport get ( int merchantID ) {
 
-    public static MerchantReport get ( int requestID ) {
-        MerchantReport currentReport = new MerchantReport ( );
-        try (Connection conn = MyConnection.getConnection ( )) {
-            String sql = "SELECT m.id as id, m.name as name, sum(p.sumPaid) as sum, m.lastSent as lastSent  FROM merchant m, payment p";
-            sql += " WHERE p.merchantId = m.id AND m.id = '" + requestID + "';";
-            Statement stmt = conn.createStatement ( );
-            ResultSet rs = stmt.executeQuery ( sql );
-            while (rs.next ( )) {
-                currentReport.setMerchantId ( rs.getInt ( "id" ) );
-                currentReport.setTitle ( rs.getString ( "name" ) );
-                currentReport.setTotalSum ( rs.getDouble ( "sum" ) );
-                currentReport.setLastSent ( rs.getDate ( "lastSent" ) );
-            }
-        } catch (IOException | SQLException e) {
-            e.printStackTrace ( );
+        Merchant merchant = GetMerchant.get ( merchantID );
+        if ( merchant == null ) {
+            return null;
         }
+        ArrayList<Payment> merchantPayments = GetPaymentByMerchant.get ( merchant );
+        if ( merchantPayments == null ) {
+            return null;
+        }
+
+        double sum = merchantPayments.stream ( )
+                .mapToDouble ( a -> a.getSumPaid ( ) )
+                .sum ( );
+
+        MerchantReport currentReport = new MerchantReport ( merchantID , merchant.getName ( ) , sum , merchant.getLastSent ( ) );
 
         return currentReport;
     }

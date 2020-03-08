@@ -6,14 +6,15 @@ Create a specific class and method that will show a total sum payed for a mercha
 */
 
 import java.sql.*;
+import java.time.LocalDate;
 
 public class MerchantReport {
     int merchantId;
     String title;
     double totalSum;
-    Date lastSent;
+    LocalDate lastSent;
 
-    public MerchantReport ( int merchantId , String title , double totalSum , Date lastSent ) {
+    public MerchantReport ( int merchantId , String title , double totalSum , LocalDate lastSent ) {
         this.merchantId = merchantId;
         this.title = title;
         this.totalSum = totalSum;
@@ -36,7 +37,7 @@ public class MerchantReport {
         this.totalSum = totalSum;
     }
 
-    public void setLastSent ( Date lastSent ) {
+    public void setLastSent ( LocalDate lastSent ) {
         this.lastSent = lastSent;
     }
 

@@ -80,5 +80,18 @@ public class Customer {
     public void setMaturity ( Date maturity ) {
         this.maturity = maturity;
     }
+
+    @Override
+    public String toString () {
+        return "Customer{" +
+                "customerId=" + customerId +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", email='" + email + '\'' +
+                ", ccNo='" + ccNo + '\'' +
+                ", ccType='" + ccType + '\'' +
+                ", maturity=" + maturity +
+                '}';
+    }
 }
 
