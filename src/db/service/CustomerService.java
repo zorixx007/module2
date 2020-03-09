@@ -1,18 +1,18 @@
-package db.repository;
+package db.service;
 
 import db.entity.Customer;
+import db.repository.CustomerSQL;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class GetCustomer {
-    public static Customer get ( int customerId ) {
+public class CustomerService {
+
+    public static Customer getCustomerByID ( Connection conn , int customerId ) {
         Customer current = null;
-        try (Connection conn = MyConnection.getConnection ( );
-             PreparedStatement ps = createPreparedStatement ( conn , customerId );
+        try (PreparedStatement ps = CustomerSQL.getCustomerByID ( conn , customerId );
              ResultSet rs = ps.executeQuery ( )) {
             if ( rs.next ( ) == false ) {
                 return null;
@@ -20,16 +20,9 @@ public class GetCustomer {
             current = new Customer ( rs.getInt ( "id" ) , rs.getString ( "name" ) ,
                     rs.getString ( "address" ) , rs.getString ( "email" ) , rs.getString ( "ccNo" ) ,
                     rs.getString ( "ccType" ) , rs.getDate ( "maturity" ) );
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace ( );
         }
         return current;
-    }
-
-    private static PreparedStatement createPreparedStatement ( Connection con , int customerId ) throws SQLException {
-        String sql = "SELECT * FROM customer where id = ?";
-        PreparedStatement ps = con.prepareStatement ( sql );
-        ps.setInt ( 1 , customerId );
-        return ps;
     }
 }

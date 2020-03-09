@@ -3,20 +3,20 @@ package db.service;
 import db.entity.Merchant;
 import db.entity.MerchantReport;
 import db.entity.Payment;
-import db.repository.GetMerchant;
-import db.repository.GetPaymentByMerchant;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 
 public class MerchantReportService {
 
-    public static MerchantReport get ( int merchantID ) {
 
-        Merchant merchant = GetMerchant.get ( merchantID );
+    public static MerchantReport getSumReportForMerchant ( Connection conn , int merchantID ) {
+
+        Merchant merchant = MerchantService.getMerchantByID ( conn , merchantID );
         if ( merchant == null ) {
             return null;
         }
-        ArrayList<Payment> merchantPayments = GetPaymentByMerchant.get ( merchant );
+        ArrayList<Payment> merchantPayments = PaymentService.getPaymentsForMerchant ( conn , merchant );
         if ( merchantPayments == null ) {
             return null;
         }
@@ -26,7 +26,6 @@ public class MerchantReportService {
                 .sum ( );
 
         MerchantReport currentReport = new MerchantReport ( merchantID , merchant.getName ( ) , sum , merchant.getLastSent ( ) );
-
         return currentReport;
     }
 }

@@ -10,7 +10,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class MyConnection {
+public class DBUtils {
     public static Connection getConnection () throws IOException, SQLException {
         Connection conn;
         Properties props = new Properties ( );
