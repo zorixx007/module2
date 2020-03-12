@@ -3,6 +3,7 @@ package db;
 import db.entity.Merchant;
 import db.entity.MerchantReport;
 import db.entity.Payment;
+import db.repository.CustomerSQL;
 import db.repository.DBUtils;
 import db.repository.MerchantSQL;
 import db.service.CustomerService;
@@ -43,7 +44,7 @@ public class ApplicationReports {
 
             /*Find the most active customer based on the number of order within the passed in time period
             (ie week, month, quarter, year). The resulting Customer object should contain the list of all Payments made. */
-            System.out.println ("print best customer for period" );
+            System.out.println ("print best customer payments for period" );
             ArrayList<Payment> bestCustomerTransactions = CustomerService.getBestCustomer ( conn , 3500 );
             bestCustomerTransactions.forEach ( item -> System.out.println ( item ) );
             System.out.println ( );

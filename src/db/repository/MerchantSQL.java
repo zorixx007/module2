@@ -152,5 +152,21 @@ public class MerchantSQL {
         return current;
     }
 
+    public static PreparedStatement addNewMerchant ( Connection con , Merchant newMerchant ) throws SQLException {
+        String sql = "INSERT INTO merchant (name, bankName, swift, account, charge, period, minSum, needToSend, sent, lastSent  ) ";
+        sql += " VALUES(?,?,?,?,?,?,?,?,?,?);";
+        PreparedStatement ps = con.prepareStatement ( sql );
+        ps.setString ( 1 , newMerchant.getName ( ) );
+        ps.setString ( 2 , newMerchant.getBankName ( ) );
+        ps.setString ( 3 , newMerchant.getSwift ( ) );
+        ps.setString ( 4 , newMerchant.getAccount ( ) );
+        ps.setDouble ( 5 , newMerchant.getCharge ( ) );
+        ps.setInt ( 6 , newMerchant.getPeriod ( ) );
+        ps.setDouble ( 7 , newMerchant.getMinSum ( ) );
+        ps.setDouble ( 8 , newMerchant.getNeedToSend ( ) );
+        ps.setDouble ( 9 , newMerchant.getSent ( ) );
+        ps.setDate ( 10 , Date.valueOf ( newMerchant.getLastSent ( ) ) );
+        return ps;
+    }
 
 }
