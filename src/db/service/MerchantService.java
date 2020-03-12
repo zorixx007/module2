@@ -1,85 +1,42 @@
 package db.service;
 
 import db.entity.Merchant;
+import db.entity.MerchantReport;
+import db.entity.Payment;
 import db.repository.MerchantSQL;
+import db.repository.PaymentSQL;
 
-import java.sql.*;
-import java.time.LocalDate;
+import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class MerchantService {
-    public static Merchant getMerchantByID ( Connection conn , int merchantId ) {
-        Merchant current = null;
-        try (PreparedStatement ps = MerchantSQL.getMerchantByID ( conn , merchantId );
-             ResultSet rs = ps.executeQuery ( )) {
-            if ( rs.next ( ) == false ) {
-                return current;
+    public static void payToMerchant ( Connection conn ) {
+        ArrayList<Merchant> merchants = MerchantSQL.getAllMerchants ( conn );
+        for (Merchant current : merchants) {
+            double toSend = current.getNeedToSend ( );
+            if ( toSend > current.getMinSum ( ) ) {
+                System.out.println ( "pay to customer " + current.getName ( ) + " amount " + toSend );
+                MerchantSQL.payToMerchant ( conn , current , toSend );
             }
-            Date date = rs.getDate ( "lastSent" );
-            LocalDate ld = null;
-            if ( date != null ) {
-                ld = date.toLocalDate ( );
-            }
-            current = new Merchant ( rs.getInt ( "id" ) , rs.getString ( "name" ) ,
-                    rs.getString ( "bankName" ) , rs.getString ( "swift" ) , rs.getString ( "account" ) ,
-                    rs.getDouble ( "charge" ) , rs.getInt ( "period" ) , rs.getDouble ( "minSum" ) ,
-                    rs.getDouble ( "needToSend" ) , rs.getDouble ( "sent" ) , ld );
-        } catch (SQLException e) {
-            e.printStackTrace ( );
         }
-        return current;
-    }
-
-    public static ArrayList<Merchant> getAllMerchants ( Connection conn ) {
-        ArrayList<Merchant> current = new ArrayList<> ( );
-        try (PreparedStatement ps = MerchantSQL.getAllMerchants ( conn );
-             ResultSet rs = ps.executeQuery ( )) {
-            if ( rs.next ( ) == false ) {
-                return current;
-            } else {
-                do {
-                    Date date = rs.getDate ( "lastSent" );
-                    LocalDate ld = null;
-                    if ( date != null ) {
-                        ld = date.toLocalDate ( );
-                    }
-                    current.add ( new Merchant ( rs.getInt ( "id" ) , rs.getString ( "name" ) ,
-                            rs.getString ( "bankName" ) , rs.getString ( "swift" ) , rs.getString ( "account" ) ,
-                            rs.getDouble ( "charge" ) , rs.getInt ( "period" ) , rs.getDouble ( "minSum" ) ,
-                            rs.getDouble ( "needToSend" ) , rs.getDouble ( "sent" ) , ld ) );
-                } while (rs.next ( ));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace ( );
-        }
-        return current;
     }
 
 
-    public static LinkedList<Merchant> getAllMerchantsSorted ( Connection conn ) {
-        LinkedList<Merchant> current = new LinkedList<> ( );
-        try (PreparedStatement ps = MerchantSQL.getAllMerchantsSorted ( conn );
-             ResultSet rs = ps.executeQuery ( )) {
-            if ( rs.next ( ) == false ) {
-                return null;
-            } else {
-                do {
-                    Date date = rs.getDate ( "lastSent" );
-                    LocalDate ld = null;
-                    if ( date != null ) {
-                        ld = date.toLocalDate ( );
-                    }
-                    current.add ( new Merchant ( rs.getInt ( "id" ) , rs.getString ( "name" ) ,
-                            rs.getString ( "bankName" ) , rs.getString ( "swift" ) , rs.getString ( "account" ) ,
-                            rs.getDouble ( "charge" ) , rs.getInt ( "period" ) , rs.getDouble ( "minSum" ) ,
-                            rs.getDouble ( "needToSend" ) , rs.getDouble ( "sent" ) , ld ) );
-                } while (rs.next ( ));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace ( );
+    public static MerchantReport getSumReportForMerchant ( Connection conn , int merchantID ) {
+        Merchant merchant = MerchantSQL.getMerchantByID ( conn , merchantID );
+        if ( merchant == null ) {
+            return null;
         }
-        return current;
+        ArrayList<Payment> merchantPayments = PaymentSQL.getPaymentsForMerchant ( conn , merchant );
+        if ( merchantPayments == null ) {
+            return null;
+        }
+        double sum = merchantPayments.stream ( )
+                .mapToDouble ( a -> a.getSumPaid ( ) )
+                .sum ( );
+        MerchantReport currentReport = new MerchantReport ( merchantID , merchant.getName ( ) , sum , merchant.getLastSent ( ) );
+        return currentReport;
     }
+
 
 }

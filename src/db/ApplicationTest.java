@@ -5,9 +5,9 @@ import db.entity.Merchant;
 import db.entity.Payment;
 import db.repository.CustomerSQL;
 import db.repository.DBUtils;
+import db.repository.MerchantSQL;
+import db.repository.PaymentSQL;
 import db.service.CustomerService;
-import db.service.PaymentService;
-import db.service.MerchantService;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -20,18 +20,18 @@ public class ApplicationTest {
     private static void run () {
         try (Connection conn = DBUtils.getConnection ( )) {
 
-            Merchant current = MerchantService.getMerchantByID ( conn, 2 );
+            Merchant current = MerchantSQL.getMerchantByID ( conn , 2 );
             System.out.println ( current );
 
 
-            Customer curr = CustomerService.getCustomerByID ( conn,1 );
+            Customer curr = CustomerSQL.getCustomerByID ( conn , 1 );
             System.out.println ( curr );
 
-            ArrayList<Payment> customerPayments = PaymentService.getPaymentsForCustomer (conn, curr );
+            ArrayList<Payment> customerPayments = PaymentSQL.getPaymentsForCustomer ( conn , curr );
             System.out.println ( "print payments by customer" );
             customerPayments.forEach ( item -> System.out.println ( item ) );
 
-            ArrayList<Payment> merchantPayments = PaymentService.getPaymentsForMerchant (conn, current );
+            ArrayList<Payment> merchantPayments = PaymentSQL.getPaymentsForMerchant ( conn , current );
             System.out.println ( "print payments by merchant" );
             merchantPayments.forEach ( item -> System.out.println ( item ) );
         } catch (SQLException | IOException e) {
@@ -40,7 +40,27 @@ public class ApplicationTest {
 
     }
 
+    private static void runTest () {
+        try (Connection conn = DBUtils.getConnection ( )) {
+
+            ArrayList<Payment> bestCustomerTransactions = CustomerService.getBestCustomer ( conn , 3500 );
+            bestCustomerTransactions.forEach ( item -> System.out.println ( item ) );
+
+
+            //            Map<Customer, Long> elementCountMap = allPaymentsForPeriod.stream ()
+
+
+            //            System.out.println ( "print payments " );
+            //            allPaymentsForPeriod.forEach ( item -> System.out.println ( item.getCustomer ().getCustomerId () ) );
+
+
+        } catch (SQLException | IOException e) {
+            e.printStackTrace ( );
+        }
+
+    }
+
     public static void main ( String[] args ) {
-        ApplicationTest.run ( );
+        ApplicationTest.runTest ( );
     }
 }
