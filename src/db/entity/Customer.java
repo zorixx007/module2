@@ -1,9 +1,18 @@
 package db.entity;
 
 import java.sql.Date;
+import java.util.Comparator;
 import java.util.List;
 
 public class Customer {
+
+    public static Comparator<Customer> comparatorCustomerByPaymentSize = new Comparator<Customer> ( ) {
+        @Override
+        public int compare ( Customer a , Customer b ) {
+            return b.getPayments ( ).size ( ) - a.getPayments ( ).size ( );
+        }
+    };
+
     int customerId;
     String name;
     String address;
@@ -11,7 +20,7 @@ public class Customer {
     String ccNo;
     String ccType;
     Date maturity;
-    List<Payment> newPay;
+    List<Payment> payments;
 
     public Customer ( int customerId , String name , String address ,
                       String email , String ccNo , String ccType , Date maturity ) {
@@ -24,15 +33,15 @@ public class Customer {
         this.maturity = maturity;
     }
 
-    public List<Payment> getNewPay () {
-        return newPay;
-    }
-
-    public void setNewPay ( List<Payment> newPay ) {
-        this.newPay = newPay;
-    }
-
     public Customer () {
+    }
+
+    public List<Payment> getPayments () {
+        return payments;
+    }
+
+    public void setPayments ( List<Payment> payments ) {
+        this.payments = payments;
     }
 
     public int getCustomerId () {
@@ -101,6 +110,7 @@ public class Customer {
                 ", ccNo='" + ccNo + '\'' +
                 ", ccType='" + ccType + '\'' +
                 ", maturity=" + maturity +
+                ", payments number=" + payments.size () +
                 '}';
     }
 }

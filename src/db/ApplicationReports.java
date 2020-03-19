@@ -1,5 +1,6 @@
 package db;
 
+import db.entity.Customer;
 import db.entity.Merchant;
 import db.entity.MerchantReport;
 import db.entity.Payment;
@@ -7,6 +8,7 @@ import db.repository.CustomerRepository;
 import db.repository.DBUtils;
 import db.repository.MerchantRepository;
 import db.repository.PaymentRepository;
+import db.service.CustomerService;
 import db.service.MerchantService;
 import db.service.PaymentService;
 
@@ -21,7 +23,8 @@ public class ApplicationReports {
         CustomerRepository cr = new CustomerRepository ( newConnection );
         PaymentRepository pr = new PaymentRepository ( cr , mr , newConnection );
         MerchantService merchantService = new MerchantService ( mr , pr );
-        PaymentService ps = new PaymentService ( pr, mr );
+        PaymentService paymentService = new PaymentService ( pr , mr );
+        CustomerService customerService = new CustomerService ( cr , pr );
 
 
         /*
@@ -46,11 +49,17 @@ public class ApplicationReports {
                 cr.getCustomerByID ( 3 ) ,
                 "Dell laptop" ,
                 2500 );
-//        ps.addNewPayment ( newp1 );
+        //        ps.addNewPayment ( newp1 );
 
             /*Find the most active customer based on the number of order within the passed in time period
             (ie week, month, quarter, year). The resulting Customer object should contain the list of all Payments made. */
-        //            System.out.println ("print best customer payments for period" );
+
+        System.out.println ( "print best customer payments for period" );
+        Customer bestCustomerForPeriod = customerService.getBestCustomerForPeriod ( 3500 );
+        System.out.println (bestCustomerForPeriod );
+        System.out.println ("with Payments list: " );
+        System.out.println (bestCustomerForPeriod.getPayments () );
+
         //            ArrayList<Payment> bestCustomerTransactions = CustomerService.getBestCustomer ( conn , 3500 );
         //            bestCustomerTransactions.forEach ( item -> System.out.println ( item ) );
         //            System.out.println ( );
