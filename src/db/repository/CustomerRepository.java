@@ -2,31 +2,56 @@ package db.repository;
 
 import db.entity.Customer;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class CustomerSQL {
+public class CustomerRepository {
+    DBUtils connectionToDB;
+    Connection con = null;
 
+    public CustomerRepository ( DBUtils connectionToDB ) {
+        this.connectionToDB = connectionToDB;
+        try {
+            con = connectionToDB.getConnection ( );
+        } catch (IOException | SQLException e) {
+            e.printStackTrace ( );
+        }
+    }
 
-    private static PreparedStatement psGetCustomerByID ( Connection con , int customerId ) throws SQLException {
-        String sql = "SELECT * FROM customer where id = ?";
+    public PreparedStatement psGetCustomerByID ( int customerId ) throws SQLException {
+        String sql = "SELECT id, name, address, email, ccNo, ccType, maturity FROM customer where id = ?";
         PreparedStatement ps = con.prepareStatement ( sql );
         ps.setInt ( 1 , customerId );
         return ps;
     }
 
-    private static PreparedStatement psGetAllCustomers ( Connection con ) throws SQLException {
-        String sql = "SELECT * FROM customer";
+    public PreparedStatement psGetAllCustomers () throws SQLException {
+        String sql = "SELECT id, name, address, email, ccNo, ccType, maturity  FROM customer";
         PreparedStatement ps = con.prepareStatement ( sql );
         return ps;
     }
 
-    public static ArrayList<Customer> getAllCustomers ( Connection conn ) {
+    public PreparedStatement psAddNewCustomer ( Customer newCustomer ) throws SQLException {
+        String sql = "INSERT INTO customer (name, address, email, ccNo, ccType, maturity) ";
+        sql += " VALUES(?,?,?,?,?,?);";
+        PreparedStatement ps = con.prepareStatement ( sql );
+        ps.setString ( 1 , newCustomer.getName ( ) );
+        ps.setString ( 2 , newCustomer.getAddress ( ) );
+        ps.setString ( 3 , newCustomer.getEmail ( ) );
+        ps.setString ( 4 , newCustomer.getCcNo ( ) );
+        ps.setString ( 5 , newCustomer.getCcType ( ) );
+        ps.setDate ( 6 , newCustomer.getMaturity ( ) );
+        return ps;
+    }
+
+
+    public ArrayList<Customer> getAllCustomers () {
         ArrayList<Customer> current = new ArrayList<> ( );
-        try (PreparedStatement ps = psGetAllCustomers ( conn );
+        try (PreparedStatement ps = psGetAllCustomers ( );
              ResultSet rs = ps.executeQuery ( )) {
             if ( rs.next ( ) == false ) {
                 return current;
@@ -43,9 +68,9 @@ public class CustomerSQL {
         return current;
     }
 
-    public static Customer getCustomerByID ( Connection conn , int customerId ) {
+    public Customer getCustomerByID ( int customerId ) {
         Customer current = null;
-        try (PreparedStatement ps = psGetCustomerByID ( conn , customerId );
+        try (PreparedStatement ps = psGetCustomerByID ( customerId );
              ResultSet rs = ps.executeQuery ( )) {
             if ( rs.next ( ) == false ) {
                 return null;
@@ -59,17 +84,5 @@ public class CustomerSQL {
         return current;
     }
 
-    public static PreparedStatement addNewCustomer ( Connection con , Customer newCustomer ) throws SQLException {
-        String sql = "INSERT INTO customer (name, address, email, ccNo, ccType, maturity) ";
-        sql += " VALUES(?,?,?,?,?,?);";
-        PreparedStatement ps = con.prepareStatement ( sql );
-        ps.setString ( 1 , newCustomer.getName ( ) );
-        ps.setString ( 2 , newCustomer.getAddress ( ) );
-        ps.setString ( 3 , newCustomer.getEmail ( ) );
-        ps.setString ( 4 , newCustomer.getCcNo ( ) );
-        ps.setString ( 5 , newCustomer.getCcType ( ) );
-        ps.setDate ( 6 , newCustomer.getMaturity ( ) );
-        return ps;
-    }
 
 }

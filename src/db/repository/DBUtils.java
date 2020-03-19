@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class DBUtils {
-    public static Connection getConnection () throws IOException, SQLException {
+    public  Connection getConnection () throws IOException, SQLException {
         Connection conn;
         Properties props = new Properties ( );
         try (BufferedReader in = Files.newBufferedReader ( Paths.get ( "app.properties" ) , Charset.forName ( "UTF-8" ) )) {

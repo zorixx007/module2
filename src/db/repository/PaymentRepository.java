@@ -4,37 +4,57 @@ import db.entity.Customer;
 import db.entity.Merchant;
 import db.entity.Payment;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class PaymentSQL {
+public class PaymentRepository {
+    CustomerRepository customerRepo;
+    MerchantRepository merchantRepo;
+    DBUtils connectionToDB;
+    Connection con = null;
+
+    public PaymentRepository ( CustomerRepository customerRepo , MerchantRepository merchantRepo , DBUtils connectionToDB ) {
+        this.customerRepo = customerRepo;
+        this.merchantRepo = merchantRepo;
+        this.connectionToDB = connectionToDB;
+        try {
+            con = connectionToDB.getConnection ( );
+        } catch (IOException | SQLException e) {
+            e.printStackTrace ( );
+        }
+    }
 
 
-    private static PreparedStatement psPaymentByMerchantID ( Connection con , int merchantId ) throws SQLException {
-        String sql = "SELECT * FROM payment WHERE merchantId = ?";
+    public Connection getCon () {
+        return con;
+    }
+
+    public PreparedStatement psPaymentByMerchantID ( int merchantId ) throws SQLException {
+        String sql = "SELECT id, dt, merchantId, customerId, goods, sumPaid, chargePaid FROM payment WHERE merchantId = ?";
         PreparedStatement ps = con.prepareStatement ( sql );
         ps.setInt ( 1 , merchantId );
         return ps;
     }
 
-    private static PreparedStatement psPaymentByCustomerID ( Connection con , int customerId ) throws SQLException {
-        String sql = "SELECT * FROM payment WHERE customerId = ?";
+    public PreparedStatement psPaymentByCustomerID ( int customerId ) throws SQLException {
+        String sql = "SELECT id, dt, merchantId, customerId, goods, sumPaid, chargePaid FROM payment WHERE customerId = ?";
         PreparedStatement ps = con.prepareStatement ( sql );
         ps.setInt ( 1 , customerId );
         return ps;
     }
 
-    private static PreparedStatement psPaymentByPeriod ( Connection con , int lastNDays ) throws SQLException {
-        String sql = "SELECT * FROM payment WHERE dt >= now() - INTERVAL ? DAY";
+    public PreparedStatement psPaymentByPeriod ( int lastNDays ) throws SQLException {
+        String sql = "SELECT id, dt, merchantId, customerId, goods, sumPaid, chargePaid FROM payment WHERE dt >= now() - INTERVAL ? DAY";
         PreparedStatement ps = con.prepareStatement ( sql );
         ps.setInt ( 1 , lastNDays );
         return ps;
     }
 
-    public static PreparedStatement addNewPayment ( Connection con , Payment newPay ) throws SQLException {
+    public PreparedStatement addNewPayment ( Payment newPay ) throws SQLException {
         String sql = "INSERT INTO payment(dt, merchantId, customerId, goods, sumPaid, chargePaid) ";
         sql += " VALUES(?,?,?,?,?,?);";
         PreparedStatement ps = con.prepareStatement ( sql );
@@ -47,13 +67,12 @@ public class PaymentSQL {
         return ps;
     }
 
-
-    public static ArrayList<Payment> getPaymentsForMerchant ( Connection conn , Merchant merchant ) {
+    public ArrayList<Payment> getPaymentsForMerchant ( Merchant merchant ) {
         ArrayList<Payment> payments = new ArrayList<> ( );
         if ( merchant == null ) {
             return payments;
         }
-        try (PreparedStatement ps = psPaymentByMerchantID ( conn , merchant.getMerchantId ( ) );
+        try (PreparedStatement ps = psPaymentByMerchantID ( merchant.getMerchantId ( ) );
              ResultSet rs = ps.executeQuery ( )) {
             if ( rs.next ( ) == false ) {
                 return payments;
@@ -62,7 +81,7 @@ public class PaymentSQL {
                     Payment current = new Payment ( rs.getInt ( "id" ) ,
                             rs.getDate ( "dt" ) ,
                             merchant ,
-                            CustomerSQL.getCustomerByID ( conn , rs.getInt ( "customerId" ) ) ,
+                            customerRepo.getCustomerByID ( rs.getInt ( "customerId" ) ) ,
                             rs.getString ( "goods" ) ,
                             rs.getDouble ( "sumPaid" ) ,
                             rs.getDouble ( "chargePaid" ) );
@@ -76,12 +95,12 @@ public class PaymentSQL {
     }
 
 
-    public static ArrayList<Payment> getPaymentsForCustomer ( Connection conn , Customer customer ) {
+    public ArrayList<Payment> getPaymentsForCustomer ( Customer customer ) {
         ArrayList<Payment> payments = new ArrayList<> ( );
         if ( customer == null ) {
             return payments;
         }
-        try (PreparedStatement ps = psPaymentByCustomerID ( conn , customer.getCustomerId ( ) );
+        try (PreparedStatement ps = psPaymentByCustomerID ( customer.getCustomerId ( ) );
              ResultSet rs = ps.executeQuery ( )) {
             if ( rs.next ( ) == false ) {
                 return payments;
@@ -89,7 +108,7 @@ public class PaymentSQL {
                 do {
                     Payment current = new Payment ( rs.getInt ( "id" ) ,
                             rs.getDate ( "dt" ) ,
-                            MerchantSQL.getMerchantByID ( conn , rs.getInt ( "merchantId" ) ) ,
+                            merchantRepo.getMerchantByID ( rs.getInt ( "merchantId" ) ) ,
                             customer ,
                             rs.getString ( "goods" ) ,
                             rs.getDouble ( "sumPaid" ) ,
@@ -104,9 +123,9 @@ public class PaymentSQL {
     }
 
 
-    public static ArrayList<Payment> getPaymentsByPeriod ( Connection conn , int lastNDays ) {
+    public ArrayList<Payment> getPaymentsByPeriod ( int lastNDays ) {
         ArrayList<Payment> payments = new ArrayList<> ( );
-        try (PreparedStatement ps = psPaymentByPeriod ( conn , lastNDays );
+        try (PreparedStatement ps = psPaymentByPeriod ( lastNDays );
              ResultSet rs = ps.executeQuery ( )) {
             if ( rs.next ( ) == false ) {
                 return payments;
@@ -114,8 +133,8 @@ public class PaymentSQL {
                 do {
                     Payment current = new Payment ( rs.getInt ( "id" ) ,
                             rs.getDate ( "dt" ) ,
-                            MerchantSQL.getMerchantByID ( conn , rs.getInt ( "merchantId" ) ) ,
-                            CustomerSQL.getCustomerByID ( conn , rs.getInt ( "customerId" ) ) ,
+                            merchantRepo.getMerchantByID ( rs.getInt ( "merchantId" ) ) ,
+                            customerRepo.getCustomerByID ( rs.getInt ( "customerId" ) ) ,
                             rs.getString ( "goods" ) ,
                             rs.getDouble ( "sumPaid" ) ,
                             rs.getDouble ( "chargePaid" ) );
@@ -128,5 +147,29 @@ public class PaymentSQL {
         return payments;
     }
 
+    public void addPayment ( Payment newPay ) {
+        Connection conn = getCon ( );
+        if ( newPay == null ) {
+            return;
+        } else if ( newPay.getChargePaid ( ) < 0 ) {
+            return;
+        }
+        try (PreparedStatement ps = addNewPayment ( newPay );
+             PreparedStatement ps2 = merchantRepo.updateMerchantFromNewPayment ( newPay )) {
+            conn.setAutoCommit ( false );
+            try {
+                // Insert new record into PAYMENT table
+                ps.executeUpdate ( );
+                // Update corresponding record in MERCHANT table
+                ps2.executeUpdate ( );
+                conn.commit ( );
+            } catch (Exception e) {
+                e.printStackTrace ( );
+                conn.rollback ( );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace ( );
+        }
+    }
 
 }

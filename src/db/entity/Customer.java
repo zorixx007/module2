@@ -1,6 +1,7 @@
 package db.entity;
 
 import java.sql.Date;
+import java.util.List;
 
 public class Customer {
     int customerId;
@@ -10,6 +11,7 @@ public class Customer {
     String ccNo;
     String ccType;
     Date maturity;
+    List<Payment> newPay;
 
     public Customer ( int customerId , String name , String address ,
                       String email , String ccNo , String ccType , Date maturity ) {
@@ -20,6 +22,14 @@ public class Customer {
         this.ccNo = ccNo;
         this.ccType = ccType;
         this.maturity = maturity;
+    }
+
+    public List<Payment> getNewPay () {
+        return newPay;
+    }
+
+    public void setNewPay ( List<Payment> newPay ) {
+        this.newPay = newPay;
     }
 
     public Customer () {

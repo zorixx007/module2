@@ -3,31 +3,38 @@ package db.service;
 import db.entity.Merchant;
 import db.entity.MerchantReport;
 import db.entity.Payment;
-import db.repository.MerchantSQL;
-import db.repository.PaymentSQL;
+import db.repository.MerchantRepository;
+import db.repository.PaymentRepository;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 
 public class MerchantService {
-    public static void payToMerchant ( Connection conn ) {
-        ArrayList<Merchant> merchants = MerchantSQL.getAllMerchants ( conn );
+    MerchantRepository merchantRepo;
+    PaymentRepository paymentRepo;
+
+    public MerchantService ( MerchantRepository merchantRepo , PaymentRepository paymentRepo ) {
+        this.merchantRepo = merchantRepo;
+        this.paymentRepo = paymentRepo;
+    }
+
+    public void payToMerchant () {
+        ArrayList<Merchant> merchants = merchantRepo.getAllMerchants ( );
         for (Merchant current : merchants) {
             double toSend = current.getNeedToSend ( );
             if ( toSend > current.getMinSum ( ) ) {
                 System.out.println ( "pay to customer " + current.getName ( ) + " amount " + toSend );
-                MerchantSQL.payToMerchant ( conn , current , toSend );
+                merchantRepo.payToMerchant ( current , toSend );
             }
         }
     }
 
 
-    public static MerchantReport getSumReportForMerchant ( Connection conn , int merchantID ) {
-        Merchant merchant = MerchantSQL.getMerchantByID ( conn , merchantID );
+    public MerchantReport getSumReportForMerchant ( int merchantID ) {
+        Merchant merchant = merchantRepo.getMerchantByID ( merchantID );
         if ( merchant == null ) {
             return null;
         }
-        ArrayList<Payment> merchantPayments = PaymentSQL.getPaymentsForMerchant ( conn , merchant );
+        ArrayList<Payment> merchantPayments = paymentRepo.getPaymentsForMerchant ( merchant );
         if ( merchantPayments == null ) {
             return null;
         }
