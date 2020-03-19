@@ -21,7 +21,7 @@ public class ApplicationReports {
         CustomerRepository cr = new CustomerRepository ( newConnection );
         PaymentRepository pr = new PaymentRepository ( cr , mr , newConnection );
         MerchantService merchantService = new MerchantService ( mr , pr );
-        PaymentService ps = new PaymentService ( pr );
+        PaymentService ps = new PaymentService ( pr, mr );
 
 
         /*
@@ -46,7 +46,7 @@ public class ApplicationReports {
                 cr.getCustomerByID ( 3 ) ,
                 "Dell laptop" ,
                 2500 );
-        ps.addNewPayment ( newp1 );
+//        ps.addNewPayment ( newp1 );
 
             /*Find the most active customer based on the number of order within the passed in time period
             (ie week, month, quarter, year). The resulting Customer object should contain the list of all Payments made. */

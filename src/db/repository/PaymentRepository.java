@@ -147,29 +147,6 @@ public class PaymentRepository {
         return payments;
     }
 
-    public void addPayment ( Payment newPay ) {
-        Connection conn = getCon ( );
-        if ( newPay == null ) {
-            return;
-        } else if ( newPay.getChargePaid ( ) < 0 ) {
-            return;
-        }
-        try (PreparedStatement ps = addNewPayment ( newPay );
-             PreparedStatement ps2 = merchantRepo.updateMerchantFromNewPayment ( newPay )) {
-            conn.setAutoCommit ( false );
-            try {
-                // Insert new record into PAYMENT table
-                ps.executeUpdate ( );
-                // Update corresponding record in MERCHANT table
-                ps2.executeUpdate ( );
-                conn.commit ( );
-            } catch (Exception e) {
-                e.printStackTrace ( );
-                conn.rollback ( );
-            }
-        } catch (SQLException e) {
-            e.printStackTrace ( );
-        }
-    }
+
 
 }
