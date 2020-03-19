@@ -7,7 +7,8 @@ import db.repository.PaymentRepository;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CustomerService {
 
@@ -28,7 +29,7 @@ public class CustomerService {
             return bestCustomer;
         }
         // debug: print all payments for period
-        System.out.println ("debug - print all payments for period" );
+        System.out.println ( "debug - print all payments for period" );
         allPaymentsForPeriod.forEach ( item -> System.out.println ( item ) );
 
         //create HashSet of customersID based on allPaymentsForPeriod
@@ -44,17 +45,21 @@ public class CustomerService {
         //create Customer by id and fill payment list for each
         for (int id : customerID) {
             Customer currentCustomer = customerRepo.getCustomerByID ( id );
-            ArrayList<Payment> currentCustomerPayments = new ArrayList<> ( );
-            // TODO: Discuss iterator + delete implementation
-            Iterator<Payment> iterator = allPaymentsForPeriod.iterator ( );
-            while (iterator.hasNext ( )) {
-                Payment entry = iterator.next ( );
-                if ( entry.getCustomer ( ).getCustomerId ( ) == id ) {
-                    currentCustomerPayments.add ( entry );
-                    iterator.remove ( );
-                }
-            }
-            currentCustomer.setPayments ( currentCustomerPayments );
+            //            // TODO: Discuss iterator + delete implementation
+            //            ArrayList<Payment> currentCustomerPayments = new ArrayList<> ( );
+            //            Iterator<Payment> iterator = allPaymentsForPeriod.iterator ( );
+            //            while (iterator.hasNext ( )) {
+            //                Payment entry = iterator.next ( );
+            //                if ( entry.getCustomer ( ).getCustomerId ( ) == id ) {
+            //                    currentCustomerPayments.add ( entry );
+            //                    iterator.remove ( );
+            //                }
+            //            }
+
+
+            //  implementation with Java 8 streams and filters
+            List<Payment> filteredCustomerPayments = allPaymentsForPeriod.stream ( ).filter ( item -> item.getCustomer ( ).getCustomerId ( ) == id ).collect ( Collectors.toList ( ) );
+            currentCustomer.setPayments (  filteredCustomerPayments );
             customersForPeriod.add ( currentCustomer );
         }
 
