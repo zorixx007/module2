@@ -102,16 +102,28 @@ public class Customer {
 
     @Override
     public String toString () {
-        return "Customer{" +
-                "customerId=" + customerId +
-                ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", email='" + email + '\'' +
-                ", ccNo='" + ccNo + '\'' +
-                ", ccType='" + ccType + '\'' +
-                ", maturity=" + maturity +
-                ", payments number=" + payments.size () +
-                '}';
+        if ( payments != null ) {
+            return "Customer{" +
+                    "customerId=" + customerId +
+                    ", name='" + name + '\'' +
+                    ", address='" + address + '\'' +
+                    ", email='" + email + '\'' +
+                    ", ccNo='" + ccNo + '\'' +
+                    ", ccType='" + ccType + '\'' +
+                    ", maturity=" + maturity +
+                    ", payments number=" + payments.size ( ) +
+                    '}';
+        } else {
+            return "Customer{" +
+                    "customerId=" + customerId +
+                    ", name='" + name + '\'' +
+                    ", address='" + address + '\'' +
+                    ", email='" + email + '\'' +
+                    ", ccNo='" + ccNo + '\'' +
+                    ", ccType='" + ccType + '\'' +
+                    ", maturity=" + maturity +
+                    '}';
+        }
     }
 }
 

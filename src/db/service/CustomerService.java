@@ -45,6 +45,7 @@ public class CustomerService {
         for (int id : customerID) {
             Customer currentCustomer = customerRepo.getCustomerByID ( id );
             ArrayList<Payment> currentCustomerPayments = new ArrayList<> ( );
+            // TODO: Discuss iterator + delete implementation
             Iterator<Payment> iterator = allPaymentsForPeriod.iterator ( );
             while (iterator.hasNext ( )) {
                 Payment entry = iterator.next ( );
