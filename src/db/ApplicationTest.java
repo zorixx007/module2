@@ -14,17 +14,17 @@ public class ApplicationTest {
 
 
     private static void runTest () {
-        // create services
-        DBUtils newConnection = new DBUtils ( );
-        MerchantRepository mr = new MerchantRepository ( newConnection );
-        CustomerRepository cr = new CustomerRepository ( newConnection );
-        PaymentRepository pr = new PaymentRepository ( cr , mr , newConnection );
-        MerchantService merchantService = new MerchantService ( mr , pr );
-        PaymentService paymentService = new PaymentService ( pr , mr );
-        CustomerService customerService = new CustomerService ( cr , pr );
-
-        Customer test = cr.getCustomerByID ( 1 );
-        System.out.println ( test );
+//        // create services
+//        DBUtils newConnection = new DBUtils ( );
+//        MerchantRepository mr = new MerchantRepository ( newConnection );
+//        CustomerRepository cr = new CustomerRepository ( newConnection );
+//        PaymentRepository pr = new PaymentRepository ( cr , mr , newConnection );
+//        MerchantService merchantService = new MerchantService ( mr , pr );
+//        PaymentService paymentService = new PaymentService ( pr , mr );
+//        CustomerService customerService = new CustomerService ( cr , pr );
+//
+//        Customer test = cr.getCustomerByID ( 1 );
+//        System.out.println ( test );
     }
 
     public static void main ( String[] args ) {

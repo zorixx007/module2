@@ -1,14 +1,10 @@
 package db.service;
 
 import db.entity.Customer;
-import db.entity.Payment;
 import db.repository.CustomerRepository;
 import db.repository.PaymentRepository;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class CustomerService {
 
@@ -23,84 +19,18 @@ public class CustomerService {
     public Customer getBestCustomerForPeriod ( int period ) {
         Customer bestCustomer = null;
 
-        // get list of payments for period
-        ArrayList<Payment> allPaymentsForPeriod = paymentRepo.getPaymentsByPeriod ( period );
-        if ( allPaymentsForPeriod.size ( ) == 0 ) {
+        // get list of customers
+        ArrayList<Customer> customersForPeriod = paymentRepo.getCustomersWithPaymentsByPeriod ( period );
+        if ( customersForPeriod.size ( ) == 0 ) {
             return bestCustomer;
-        }
-        // debug: print all payments for period
-        System.out.println ( "debug - print all payments for period" );
-        allPaymentsForPeriod.forEach ( item -> System.out.println ( item ) );
-
-        //create HashSet of customersID based on allPaymentsForPeriod
-        HashSet<Integer> customerID = new HashSet<> ( );
-        allPaymentsForPeriod.forEach ( item -> customerID.add ( item.getCustomer ( ).getCustomerId ( ) ) );
-        if ( customerID.size ( ) == 0 ) {
-            return bestCustomer;
-        }
-
-        // create ArrayList of Customers
-        ArrayList<Customer> customersForPeriod = new ArrayList<> ( );
-
-        //create Customer by id and fill payment list for each
-        for (int id : customerID) {
-            Customer currentCustomer = customerRepo.getCustomerByID ( id );
-            //            // TODO: Discuss iterator + delete implementation
-            //            ArrayList<Payment> currentCustomerPayments = new ArrayList<> ( );
-            //            Iterator<Payment> iterator = allPaymentsForPeriod.iterator ( );
-            //            while (iterator.hasNext ( )) {
-            //                Payment entry = iterator.next ( );
-            //                if ( entry.getCustomer ( ).getCustomerId ( ) == id ) {
-            //                    currentCustomerPayments.add ( entry );
-            //                    iterator.remove ( );
-            //                }
-            //            }
-
-
-            //  implementation with Java 8 streams and filters
-            List<Payment> filteredCustomerPayments = allPaymentsForPeriod.stream ( ).filter ( item -> item.getCustomer ( ).getCustomerId ( ) == id ).collect ( Collectors.toList ( ) );
-            currentCustomer.setPayments (  filteredCustomerPayments );
-            customersForPeriod.add ( currentCustomer );
         }
 
         // sort list of customers
         customersForPeriod.sort ( Customer.comparatorCustomerByPaymentSize );
-
         bestCustomer = customersForPeriod.get ( 0 );
         return bestCustomer;
     }
-    // todo: refactor customer
-    //
-    //    public static ArrayList<Payment> getBestCustomer ( Connection conn , int period ) {
-    //        //create an empty list of best customer payments
-    //        ArrayList<Payment> bestCustomerTransactions = new ArrayList<> ( );
-    //
-    //        // get list of payments
-    //        ArrayList<Payment> allPaymentsForPeriod = PaymentRepository.getPaymentsByPeriod ( conn , period );
-    //        if ( allPaymentsForPeriod.size ( ) == 0 ) {
-    //            return bestCustomerTransactions;
-    //        }
-    //        //create list of customersID based on payment list
-    //        ArrayList<Integer> customerID = new ArrayList<> ( );
-    //        allPaymentsForPeriod.forEach ( item -> customerID.add ( item.getCustomer ( ).getCustomerId ( ) ) );
-    //        if ( customerID.size ( ) == 0 ) {
-    //            return bestCustomerTransactions;
-    //        }
-    //        //create map of occurrence
-    //        Map<Integer, Long> occurrences = customerID.stream ( ).collect ( Collectors.groupingBy ( w -> w , Collectors.counting ( ) ) );
-    //
-    //        //find max value key
-    //        int customerKey = Collections.max ( occurrences.entrySet ( ) , Map.Entry.comparingByValue ( ) ).getKey ( );
-    //
-    //        //fill list of payment with only our customer
-    //        //        todo: how to refactor with lambda ????
-    //        for (Payment item : allPaymentsForPeriod) {
-    //            if ( item.getCustomer ( ).getCustomerId ( ) == customerKey ) {
-    //                bestCustomerTransactions.add ( item );
-    //            }
-    //        }
-    //        return bestCustomerTransactions;
-    //    }
+
 
     //    public static boolean uploadCustomersFromFile ( Connection conn , Path filePath ) {
     //        //create an empty HashMap of new Customers loaded from file

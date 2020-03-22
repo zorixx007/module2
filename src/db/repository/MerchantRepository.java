@@ -11,16 +11,11 @@ import java.util.LinkedList;
 
 
 public class MerchantRepository {
-    DBUtils connectionToDB;
-    Connection con = null;
 
-    public MerchantRepository ( DBUtils connectionToDB )  {
-        this.connectionToDB = connectionToDB;
-        try {
-            con = connectionToDB.getConnection ( );
-        } catch (IOException |SQLException e) {
-            e.printStackTrace ( );
-        }
+    Connection con ;
+
+    public MerchantRepository ( Connection con ) {
+        this.con = con;
     }
 
     public Connection getCon () {

@@ -18,6 +18,7 @@ public class PaymentService {
         this.merchantRepo = merchantRepo;
     }
 
+
     public void addNewPayment ( Payment newPay ) {
         Connection conn = paymentRepo.getCon ( );
         if ( newPay == null ) {

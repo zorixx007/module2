@@ -2,7 +2,6 @@ package db.repository;
 
 import db.entity.Customer;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,16 +9,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class CustomerRepository {
-    DBUtils connectionToDB;
-    Connection con = null;
+    Connection con;
 
-    public CustomerRepository ( DBUtils connectionToDB ) {
-        this.connectionToDB = connectionToDB;
-        try {
-            con = connectionToDB.getConnection ( );
-        } catch (IOException | SQLException e) {
-            e.printStackTrace ( );
-        }
+    public CustomerRepository ( Connection con ) {
+        this.con = con;
     }
 
     public PreparedStatement psGetCustomerByID ( int customerId ) throws SQLException {

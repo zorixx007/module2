@@ -1,6 +1,7 @@
 package db.entity;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class Customer {
     String ccNo;
     String ccType;
     Date maturity;
-    List<Payment> payments;
+    List<Payment> payments = new ArrayList<> ( );
 
     public Customer ( int customerId , String name , String address ,
                       String email , String ccNo , String ccType , Date maturity ) {
@@ -42,6 +43,10 @@ public class Customer {
 
     public void setPayments ( List<Payment> payments ) {
         this.payments = payments;
+    }
+
+    public void addPayment ( Payment newPay ) {
+        this.payments.add ( newPay );
     }
 
     public int getCustomerId () {
@@ -102,28 +107,17 @@ public class Customer {
 
     @Override
     public String toString () {
-        if ( payments != null ) {
-            return "Customer{" +
-                    "customerId=" + customerId +
-                    ", name='" + name + '\'' +
-                    ", address='" + address + '\'' +
-                    ", email='" + email + '\'' +
-                    ", ccNo='" + ccNo + '\'' +
-                    ", ccType='" + ccType + '\'' +
-                    ", maturity=" + maturity +
-                    ", payments number=" + payments.size ( ) +
-                    '}';
-        } else {
-            return "Customer{" +
-                    "customerId=" + customerId +
-                    ", name='" + name + '\'' +
-                    ", address='" + address + '\'' +
-                    ", email='" + email + '\'' +
-                    ", ccNo='" + ccNo + '\'' +
-                    ", ccType='" + ccType + '\'' +
-                    ", maturity=" + maturity +
-                    '}';
-        }
+        return "Customer{" +
+                "customerId=" + customerId +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", email='" + email + '\'' +
+                ", ccNo='" + ccNo + '\'' +
+                ", ccType='" + ccType + '\'' +
+                ", maturity=" + maturity +
+                ", payments number=" + payments.size ( ) +
+                '}';
+
     }
 }
 

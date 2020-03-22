@@ -4,28 +4,23 @@ import db.entity.Customer;
 import db.entity.Merchant;
 import db.entity.Payment;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class PaymentRepository {
     CustomerRepository customerRepo;
     MerchantRepository merchantRepo;
-    DBUtils connectionToDB;
-    Connection con = null;
+    Connection con;
 
-    public PaymentRepository ( CustomerRepository customerRepo , MerchantRepository merchantRepo , DBUtils connectionToDB ) {
+    public PaymentRepository ( CustomerRepository customerRepo , MerchantRepository merchantRepo , Connection con ) {
         this.customerRepo = customerRepo;
         this.merchantRepo = merchantRepo;
-        this.connectionToDB = connectionToDB;
-        try {
-            con = connectionToDB.getConnection ( );
-        } catch (IOException | SQLException e) {
-            e.printStackTrace ( );
-        }
+        this.con = con;
     }
 
 
@@ -122,31 +117,56 @@ public class PaymentRepository {
         return payments;
     }
 
-
-    public ArrayList<Payment> getPaymentsByPeriod ( int lastNDays ) {
-        ArrayList<Payment> payments = new ArrayList<> ( );
+    public ArrayList<Customer> getCustomersWithPaymentsByPeriod ( int lastNDays ) {
+        ArrayList<Customer> customers = new ArrayList<> ( );
         try (PreparedStatement ps = psPaymentByPeriod ( lastNDays );
              ResultSet rs = ps.executeQuery ( )) {
             if ( rs.next ( ) == false ) {
-                return payments;
+                return customers;
             } else {
+                HashMap<Integer, Merchant> merchantCache = new HashMap<> ( );
+                HashMap<Integer, Customer> customerCache = new HashMap<> ( );
+                Merchant merchantByID;
+                Customer customerByID;
                 do {
-                    Payment current = new Payment ( rs.getInt ( "id" ) ,
+                    //check if newMerchant exists in cache
+                    int newMerchantID = rs.getInt ( "merchantId" );
+                    if ( merchantCache.containsKey ( newMerchantID ) ) {
+                        merchantByID = merchantCache.get ( newMerchantID );
+                    } else {
+                        merchantByID = merchantRepo.getMerchantByID ( newMerchantID );
+                        merchantCache.put ( newMerchantID , merchantByID );
+                    }
+
+                    //check if newCustomer exists in cache
+                    int newCustomerID = rs.getInt ( "customerID" );
+                    if ( customerCache.containsKey ( newCustomerID ) ) {
+                        customerByID = customerCache.get ( newCustomerID );
+                    } else {
+                        customerByID = customerRepo.getCustomerByID ( newCustomerID );
+                    }
+
+                    //create new payment
+                    Payment currentPayment = new Payment ( rs.getInt ( "id" ) ,
                             rs.getDate ( "dt" ) ,
-                            merchantRepo.getMerchantByID ( rs.getInt ( "merchantId" ) ) ,
-                            customerRepo.getCustomerByID ( rs.getInt ( "customerId" ) ) ,
+                            merchantByID ,
+                            customerByID ,
                             rs.getString ( "goods" ) ,
                             rs.getDouble ( "sumPaid" ) ,
                             rs.getDouble ( "chargePaid" ) );
-                    payments.add ( current );
+
+                    //get customer from map and add currentPayment
+                    customerByID.addPayment ( currentPayment );
+                    customerCache.put ( newCustomerID , customerByID );
                 } while (rs.next ( ));
+                //fill Customer list with Values from Customer Map
+                customerCache.forEach((k,v)->customers.add ( v ));
             }
         } catch (SQLException e) {
             e.printStackTrace ( );
         }
-        return payments;
+        return customers;
     }
-
 
 
 }
