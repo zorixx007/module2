@@ -13,7 +13,6 @@ public class Customer {
             return b.getPayments ( ).size ( ) - a.getPayments ( ).size ( );
         }
     };
-
     int customerId;
     String name;
     String address;
@@ -35,6 +34,19 @@ public class Customer {
     }
 
     public Customer () {
+    }
+
+    @Override
+    public boolean equals ( Object o ) {
+        if ( this == o ) return true;
+        if ( o == null || getClass ( ) != o.getClass ( ) ) return false;
+        Customer customer = (Customer) o;
+        return name.toLowerCase ( ).equals ( customer.name.toLowerCase ( ) );
+    }
+
+    @Override
+    public int hashCode () {
+        return name.hashCode ( );
     }
 
     public List<Payment> getPayments () {

@@ -137,6 +137,19 @@ public class Merchant {
                 ", lastSent=" + lastSent +
                 '}';
     }
+
+    @Override
+    public boolean equals ( Object o ) {
+        if ( this == o ) return true;
+        if ( o == null || getClass ( ) != o.getClass ( ) ) return false;
+        Merchant merchant = (Merchant) o;
+        return name.toLowerCase ( ).equals ( merchant.name.toLowerCase ( ) );
+    }
+
+    @Override
+    public int hashCode () {
+        return name.hashCode ( );
+    }
 }
 
 

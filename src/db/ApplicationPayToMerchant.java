@@ -1,5 +1,6 @@
 package db;
 
+import db.fileUtils.LoadCustomers;
 import db.repository.CustomerRepository;
 import db.repository.DBUtils;
 import db.repository.MerchantRepository;
@@ -18,7 +19,7 @@ should update the sent and lastSent columns in the Merchant table
 public class ApplicationPayToMerchant {
     private static void run () throws IOException, SQLException {
         // create services
-        Connection newConnection = new DBUtils ( ).getConnection ();
+        final Connection newConnection = new DBUtils ( ).getConnection ( );
         MerchantRepository mr = new MerchantRepository ( newConnection );
         CustomerRepository cr = new CustomerRepository ( newConnection );
         PaymentRepository pr = new PaymentRepository ( cr , mr , newConnection );

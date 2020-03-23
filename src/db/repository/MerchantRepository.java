@@ -3,16 +3,17 @@ package db.repository;
 import db.entity.Merchant;
 import db.entity.Payment;
 
-import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 
 public class MerchantRepository {
 
-    Connection con ;
+    Connection con;
+    HashMap<Integer, Merchant> cacheMerchant = new HashMap<> ( );
 
     public MerchantRepository ( Connection con ) {
         this.con = con;
@@ -27,6 +28,58 @@ public class MerchantRepository {
         PreparedStatement ps = con.prepareStatement ( sql );
         ps.setInt ( 1 , merchantId );
         return ps;
+    }
+
+    public Merchant getMerchantByID ( int merchantId ) {
+        Merchant current = null;
+        try (PreparedStatement ps = psGetMerchantByID ( merchantId );
+             ResultSet rs = ps.executeQuery ( )) {
+            if ( rs.next ( ) == false ) {
+                return current;
+            }
+            Date date = rs.getDate ( "lastSent" );
+            LocalDate ld = null;
+            if ( date != null ) {
+                ld = date.toLocalDate ( );
+            }
+            current = new Merchant ( rs.getInt ( "id" ) , rs.getString ( "name" ) ,
+                    rs.getString ( "bankName" ) , rs.getString ( "swift" ) , rs.getString ( "account" ) ,
+                    rs.getDouble ( "charge" ) , rs.getInt ( "period" ) , rs.getDouble ( "minSum" ) ,
+                    rs.getDouble ( "needToSend" ) , rs.getDouble ( "sent" ) , ld );
+        } catch (SQLException e) {
+            e.printStackTrace ( );
+        }
+        return current;
+    }
+
+
+    public PreparedStatement psGetMerchantByName ( String merchantName ) throws SQLException {
+        String sql = "SELECT id, name, bankName, swift, account, charge, period, minSum, needToSend, sent, lastSent FROM merchant where id = ?";
+        PreparedStatement ps = con.prepareStatement ( sql );
+        ps.setString ( 1 , merchantName );
+        return ps;
+    }
+
+    public Merchant getMerchantByName ( String merchantName ) {
+        Merchant current = null;
+        try (PreparedStatement ps = psGetMerchantByName ( merchantName );
+             ResultSet rs = ps.executeQuery ( )) {
+            if ( rs.next ( ) == false ) {
+                return current;
+            }
+            Date date = rs.getDate ( "lastSent" );
+            LocalDate ld = null;
+            if ( date != null ) {
+                ld = date.toLocalDate ( );
+            }
+            current = new Merchant ( rs.getInt ( "id" ) , rs.getString ( "name" ) ,
+                    rs.getString ( "bankName" ) , rs.getString ( "swift" ) , rs.getString ( "account" ) ,
+                    rs.getDouble ( "charge" ) , rs.getInt ( "period" ) , rs.getDouble ( "minSum" ) ,
+                    rs.getDouble ( "needToSend" ) , rs.getDouble ( "sent" ) , ld );
+        } catch (SQLException e) {
+            e.printStackTrace ( );
+        }
+        return current;
     }
 
     public PreparedStatement psGetAllMerchants () throws SQLException {
@@ -66,9 +119,13 @@ public class MerchantRepository {
         return ps;
     }
 
-    public PreparedStatement addNewMerchant ( Merchant newMerchant ) throws SQLException {
+    public PreparedStatement psAddNewMerchant ( Merchant newMerchant ) throws SQLException {
         String sql = "INSERT INTO merchant (name, bankName, swift, account, charge, period, minSum, needToSend, sent, lastSent  ) ";
         sql += " VALUES(?,?,?,?,?,?,?,?,?,?);";
+        Date ld = null;
+        if ( newMerchant.getLastSent ( ) != null ) {
+            ld = Date.valueOf ( newMerchant.getLastSent ( ) );
+        }
         PreparedStatement ps = con.prepareStatement ( sql );
         ps.setString ( 1 , newMerchant.getName ( ) );
         ps.setString ( 2 , newMerchant.getBankName ( ) );
@@ -79,10 +136,37 @@ public class MerchantRepository {
         ps.setDouble ( 7 , newMerchant.getMinSum ( ) );
         ps.setDouble ( 8 , newMerchant.getNeedToSend ( ) );
         ps.setDouble ( 9 , newMerchant.getSent ( ) );
-        ps.setDate ( 10 , Date.valueOf ( newMerchant.getLastSent ( ) ) );
+        ps.setDate ( 10 , ld );
         return ps;
     }
 
+    public void AddNewMerchant ( Merchant newMerchant ) {
+        try (PreparedStatement ps = psAddNewMerchant ( newMerchant )) {
+            ps.executeUpdate ( );
+        } catch (Exception e) {
+            e.printStackTrace ( );
+        }
+    }
+
+    public boolean uploadMerchantListToDB ( ArrayList<Merchant> merchantList ) {
+        Connection conn = getCon ( );
+        try {
+            conn.setAutoCommit ( false );
+            for (Merchant merchant : merchantList) {
+                AddNewMerchant ( merchant );
+            }
+            conn.commit ( );
+        } catch (SQLException e) {
+            e.printStackTrace ( );
+            try {
+                conn.rollback ( );
+            } catch (SQLException ex) {
+                ex.printStackTrace ( );
+            }
+            return false;
+        }
+        return true;
+    }
 
     public void payToMerchant ( Merchant merchant , double sumToPay ) {
         Connection conn = getCon ( );
@@ -110,27 +194,6 @@ public class MerchantRepository {
         }
     }
 
-    public Merchant getMerchantByID ( int merchantId ) {
-        Merchant current = null;
-        try (PreparedStatement ps = psGetMerchantByID ( merchantId );
-             ResultSet rs = ps.executeQuery ( )) {
-            if ( rs.next ( ) == false ) {
-                return current;
-            }
-            Date date = rs.getDate ( "lastSent" );
-            LocalDate ld = null;
-            if ( date != null ) {
-                ld = date.toLocalDate ( );
-            }
-            current = new Merchant ( rs.getInt ( "id" ) , rs.getString ( "name" ) ,
-                    rs.getString ( "bankName" ) , rs.getString ( "swift" ) , rs.getString ( "account" ) ,
-                    rs.getDouble ( "charge" ) , rs.getInt ( "period" ) , rs.getDouble ( "minSum" ) ,
-                    rs.getDouble ( "needToSend" ) , rs.getDouble ( "sent" ) , ld );
-        } catch (SQLException e) {
-            e.printStackTrace ( );
-        }
-        return current;
-    }
 
     public ArrayList<Merchant> getAllMerchants () {
         ArrayList<Merchant> current = new ArrayList<> ( );

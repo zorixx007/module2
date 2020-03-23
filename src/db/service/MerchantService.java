@@ -1,16 +1,26 @@
 package db.service;
 
+import db.entity.Customer;
 import db.entity.Merchant;
 import db.entity.MerchantReport;
 import db.entity.Payment;
+import db.fileUtils.LoadMerchants;
 import db.repository.MerchantRepository;
 import db.repository.PaymentRepository;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class MerchantService {
     MerchantRepository merchantRepo;
     PaymentRepository paymentRepo;
+    LoadMerchants loadMerchantsFileUtils;
+
+    public MerchantService ( MerchantRepository merchantRepo , PaymentRepository paymentRepo , LoadMerchants loadMerchantsFileUtils ) {
+        this.merchantRepo = merchantRepo;
+        this.paymentRepo = paymentRepo;
+        this.loadMerchantsFileUtils = loadMerchantsFileUtils;
+    }
 
     public MerchantService ( MerchantRepository merchantRepo , PaymentRepository paymentRepo ) {
         this.merchantRepo = merchantRepo;
@@ -45,5 +55,19 @@ public class MerchantService {
         return currentReport;
     }
 
+
+    public boolean loadMerchantFromFile ( Path filePath ) {
+        //get list of unique merchants from file:
+        ArrayList<Merchant> merchantsFromFile = loadMerchantsFileUtils.getMerchantsFromFile ( filePath );
+
+        //get list of merchants from DB
+        ArrayList<Merchant> merchantsFromDB = merchantRepo.getAllMerchants ( );
+
+        //remove existed in DB records from merchantsFromFile
+        merchantsFromFile.removeAll ( merchantsFromDB );
+
+        //upload merchantsFromFile to db
+        return merchantRepo.uploadMerchantListToDB ( merchantsFromFile );
+    }
 
 }

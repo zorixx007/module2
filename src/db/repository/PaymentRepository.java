@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class PaymentRepository {
     CustomerRepository customerRepo;
@@ -155,7 +154,7 @@ public class PaymentRepository {
                             rs.getDouble ( "sumPaid" ) ,
                             rs.getDouble ( "chargePaid" ) );
 
-                    //get customer from map and add currentPayment
+                    //add currentPayment to current Customer
                     customerByID.addPayment ( currentPayment );
                     customerCache.put ( newCustomerID , customerByID );
                 } while (rs.next ( ));
@@ -165,6 +164,7 @@ public class PaymentRepository {
         } catch (SQLException e) {
             e.printStackTrace ( );
         }
+
         return customers;
     }
 
