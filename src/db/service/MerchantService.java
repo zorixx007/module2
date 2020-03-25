@@ -1,6 +1,5 @@
 package db.service;
 
-import db.entity.Customer;
 import db.entity.Merchant;
 import db.entity.MerchantReport;
 import db.entity.Payment;

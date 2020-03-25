@@ -29,7 +29,7 @@ public class Payment {
         this.customer = customer;
         this.goods = goods;
         this.sumPaid = sumPaid;
-        this.chargePaid = Math.round ( ( merchant.getCharge ( ) * sumPaid ) / 100 );
+        this.chargePaid =  ( merchant.getCharge ( ) * sumPaid ) / 100 ;
     }
 
     public Payment () {

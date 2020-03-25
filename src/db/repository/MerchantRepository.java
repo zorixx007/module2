@@ -54,7 +54,7 @@ public class MerchantRepository {
 
 
     public PreparedStatement psGetMerchantByName ( String merchantName ) throws SQLException {
-        String sql = "SELECT id, name, bankName, swift, account, charge, period, minSum, needToSend, sent, lastSent FROM merchant where id = ?";
+        String sql = "SELECT id, name, bankName, swift, account, charge, period, minSum, needToSend, sent, lastSent FROM merchant where name = ?";
         PreparedStatement ps = con.prepareStatement ( sql );
         ps.setString ( 1 , merchantName );
         return ps;
