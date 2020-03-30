@@ -123,19 +123,11 @@ public class PaymentRepository {
             if ( rs.next ( ) == false ) {
                 return customers;
             } else {
-                HashMap<Integer, Merchant> merchantCache = new HashMap<> ( );
                 HashMap<Integer, Customer> customerCache = new HashMap<> ( );
                 Merchant merchantByID;
                 Customer customerByID;
                 do {
-                    //check if newMerchant exists in cache
-                    int newMerchantID = rs.getInt ( "merchantId" );
-                    if ( merchantCache.containsKey ( newMerchantID ) ) {
-                        merchantByID = merchantCache.get ( newMerchantID );
-                    } else {
-                        merchantByID = merchantRepo.getMerchantByID ( newMerchantID );
-                        merchantCache.put ( newMerchantID , merchantByID );
-                    }
+                    merchantByID = merchantRepo.getMerchantByID ( rs.getInt ( "merchantId" ) );
 
                     //check if newCustomer exists in cache
                     int newCustomerID = rs.getInt ( "customerID" );
@@ -159,14 +151,11 @@ public class PaymentRepository {
                     customerCache.put ( newCustomerID , customerByID );
                 } while (rs.next ( ));
                 //fill Customer list with Values from Customer Map
-                customerCache.forEach((k,v)->customers.add ( v ));
+                customerCache.forEach ( ( k , v ) -> customers.add ( v ) );
             }
         } catch (SQLException e) {
             e.printStackTrace ( );
         }
-
         return customers;
     }
-
-
 }

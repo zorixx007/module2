@@ -13,7 +13,8 @@ import java.util.LinkedList;
 public class MerchantRepository {
 
     Connection con;
-    HashMap<Integer, Merchant> cacheMerchant = new HashMap<> ( );
+    private HashMap<Integer, Merchant> cacheMerchantByID = new HashMap<> ( );
+
 
     public MerchantRepository ( Connection con ) {
         this.con = con;
@@ -32,22 +33,27 @@ public class MerchantRepository {
 
     public Merchant getMerchantByID ( int merchantId ) {
         Merchant current = null;
-        try (PreparedStatement ps = psGetMerchantByID ( merchantId );
-             ResultSet rs = ps.executeQuery ( )) {
-            if ( rs.next ( ) == false ) {
-                return current;
+        if ( cacheMerchantByID.containsKey ( merchantId ) ) {
+            current = cacheMerchantByID.get ( merchantId );
+        } else {
+            try (PreparedStatement ps = psGetMerchantByID ( merchantId );
+                 ResultSet rs = ps.executeQuery ( )) {
+                if ( rs.next ( ) == false ) {
+                    return current;
+                }
+                Date date = rs.getDate ( "lastSent" );
+                LocalDate ld = null;
+                if ( date != null ) {
+                    ld = date.toLocalDate ( );
+                }
+                current = new Merchant ( rs.getInt ( "id" ) , rs.getString ( "name" ) ,
+                        rs.getString ( "bankName" ) , rs.getString ( "swift" ) , rs.getString ( "account" ) ,
+                        rs.getDouble ( "charge" ) , rs.getInt ( "period" ) , rs.getDouble ( "minSum" ) ,
+                        rs.getDouble ( "needToSend" ) , rs.getDouble ( "sent" ) , ld );
+            } catch (SQLException e) {
+                e.printStackTrace ( );
             }
-            Date date = rs.getDate ( "lastSent" );
-            LocalDate ld = null;
-            if ( date != null ) {
-                ld = date.toLocalDate ( );
-            }
-            current = new Merchant ( rs.getInt ( "id" ) , rs.getString ( "name" ) ,
-                    rs.getString ( "bankName" ) , rs.getString ( "swift" ) , rs.getString ( "account" ) ,
-                    rs.getDouble ( "charge" ) , rs.getInt ( "period" ) , rs.getDouble ( "minSum" ) ,
-                    rs.getDouble ( "needToSend" ) , rs.getDouble ( "sent" ) , ld );
-        } catch (SQLException e) {
-            e.printStackTrace ( );
+            cacheMerchantByID.put ( merchantId , current );
         }
         return current;
     }

@@ -25,7 +25,7 @@ public class CustomerService {
         this.paymentRepo = paymentRepo;
     }
 
-    public Customer getBestCustomerForPeriod ( int period ) {
+    public Customer getBestCustomerForPeriodOfDays ( int period ) {
         Customer bestCustomer = null;
 
         // get list of customers

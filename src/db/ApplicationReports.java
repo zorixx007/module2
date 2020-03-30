@@ -61,7 +61,7 @@ public class ApplicationReports {
             (ie week, month, quarter, year). The resulting Customer object should contain the list of all Payments made. */
 
             System.out.println ( "print best customer for period" );
-            Customer bestCustomerForPeriod = customerService.getBestCustomerForPeriod ( 3500 );
+            Customer bestCustomerForPeriod = customerService.getBestCustomerForPeriodOfDays ( 3500 );
             System.out.println ( bestCustomerForPeriod );
             System.out.println ( "with Payments list: " );
             System.out.println ( bestCustomerForPeriod.getPayments ( ) );
